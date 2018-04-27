@@ -24,6 +24,12 @@
 					...
 				...
 '''
+import numpy as np
+from keras.preprocessing.image import ImageDataGenerator
+from keras.models import Sequential
+from keras.layers import Dropout, Flatten, Dense, Conv2D, MaxPooling2D
+from keras import applications
+
 
 # dimensions of our images.
 img_width, img_height = 100, 100
@@ -57,7 +63,7 @@ def trainSimpleVgg():
             target_size=(img_width, img_height),
             batch_size=batch_size,
             shuffle=False)
-	nb_classes = train_gen.classes
+	nb_classes = train_gen.num_classes
 
     #Resize arrays
     inputShape = (img_width, img_height, 3)

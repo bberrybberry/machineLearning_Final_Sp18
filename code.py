@@ -39,6 +39,26 @@ nb_classes = 2
 
 
 def trainSimpleVgg():
+	# load data
+	    train_datagen = ImageDataGenerator(
+            rescale=1./255,
+            shear_range=.2,
+            zoom_range=.2,
+            horizontal_flip=True)
+    test_datagen = ImageDataGenerator(rescale=1./255)
+    
+    train_gen = train_datagen.flow_from_directory(
+            train_data_dir,
+            target_size=(img_width, img_height),
+            batch_size=batch_size,
+            shuffle=False)
+    test_gen = test_datagen.flow_from_directory(
+            validation_data_dir,
+            target_size=(img_width, img_height),
+            batch_size=batch_size,
+            shuffle=False)
+	nb_classes = train_gen.classes
+
     #Resize arrays
     inputShape = (img_width, img_height, 3)
     
@@ -82,23 +102,7 @@ def trainSimpleVgg():
     vggInspired.summary()
     vggInspired.compile(loss='categorical_crossentropy', optimizer='adadelta', metrics=["accuracy"])
     
-    train_datagen = ImageDataGenerator(
-            rescale=1./255,
-            shear_range=.2,
-            zoom_range=.2,
-            horizontal_flip=True)
-    test_datagen = ImageDataGenerator(rescale=1./255)
-    
-    train_gen = train_datagen.flow_from_directory(
-            train_data_dir,
-            target_size=(img_width, img_height),
-            batch_size=batch_size,
-            shuffle=False)
-    test_gen = test_datagen.flow_from_directory(
-            validation_data_dir,
-            target_size=(img_width, img_height),
-            batch_size=batch_size,
-            shuffle=False)
+
     
     h = vggInspired.fit_generator(
             train_gen,

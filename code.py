@@ -36,7 +36,7 @@ nb_validation_samples = 80
 epochs = 10
 batch_size = 10
 nb_classes = 2
-
+nb_nodes = 512
 
 def trainSimpleVgg():
 	# load data
@@ -92,9 +92,9 @@ def trainSimpleVgg():
     vggInspired.add(Flatten())
     
     #fc layers
-    vggInspired.add(Dense(4096))
-    vggInspired.add(Dense(4096))
-    vggInspired.add(Dense(4096))
+    vggInspired.add(Dense(nb_nodes))
+    vggInspired.add(Dense(nb_nodes))
+    vggInspired.add(Dense(nb_nodes))
     
     #output softmax
     vggInspired.add(Dense(nb_classes, activation='softmax'))

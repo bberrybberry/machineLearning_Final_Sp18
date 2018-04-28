@@ -40,7 +40,7 @@ train_data_dir = 'data/train'
 validation_data_dir = 'data/validation'
 nb_train_samples = 1080*85
 nb_validation_samples = 120*85
-epochs = 200
+epochs = 100
 batch_size = 60
 nb_nodes = 4096
 nb_nodes_last = 1000
@@ -118,6 +118,8 @@ def trainSimpleVgg():
 	vggInspired.add(Dense(nb_classes, activation='softmax'))
 	
 	vggInspired.summary()
+	
+	# set optmizer and compile model
 	vggInspired.compile(loss='categorical_crossentropy', optimizer='adadelta', metrics=["accuracy"])
 	
 	# Prepare model model saving directory.

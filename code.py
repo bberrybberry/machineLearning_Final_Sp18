@@ -42,7 +42,7 @@ nb_train_samples = 1080*85
 nb_validation_samples = 120*85
 epochs = 200
 batch_size = 60
-nb_nodes = 1024
+nb_nodes = 2048
 
 def trainSimpleVgg():
 	# load data

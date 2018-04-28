@@ -111,7 +111,9 @@ def trainSimpleVgg():
 	
 	#fc layers
 	vggInspired.add(Dense(nb_nodes // nb_nodes_small_factor))
+	vggInspired.add(Dropout(.5))
 	vggInspired.add(Dense(nb_nodes // nb_nodes_small_factor))
+	vggInspired.add(Dropout(.5))
 	vggInspired.add(Dense(nb_nodes_last // nb_nodes_small_factor))
 	
 	#output softmax

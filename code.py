@@ -42,7 +42,9 @@ nb_train_samples = 1080*85
 nb_validation_samples = 120*85
 epochs = 200
 batch_size = 60
-nb_nodes = 2048
+nb_nodes = 4096
+nb_nodes_last = 1000
+nb_nodes_small_factor = 2
 
 def trainSimpleVgg():
 	# load data
@@ -73,18 +75,21 @@ def trainSimpleVgg():
 	#Resize arrays
 	inputShape = (img_width, img_height, 3)
 	
-	# Create model based on VGG-A
+	# Create model based on VGG-D
 	vggInspired = Sequential()
 	
 	#first conv layer
 	vggInspired.add(Conv2D(64, kernel_size=3, strides=1, input_shape=inputShape, padding='same', activation='relu'))
+	vggInspired.add(Conv2D(64, kernel_size=3, strides=1, padding='same', activation='relu'))
 	vggInspired.add(MaxPooling2D(pool_size=(2, 2), strides=None, padding='valid', data_format=None))
 	
 	#second conv layer
 	vggInspired.add(Conv2D(128, kernel_size=3, strides=1, padding='same', activation='relu'))
+	vggInspired.add(Conv2D(128, kernel_size=3, strides=1, padding='same', activation='relu'))
 	vggInspired.add(MaxPooling2D(pool_size=(2, 2), strides=None, padding='valid', data_format=None))
 	
 	#third conv layer
+	vggInspired.add(Conv2D(256, kernel_size=3, strides=1, padding='same', activation='relu'))
 	vggInspired.add(Conv2D(256, kernel_size=3, strides=1, padding='same', activation='relu'))
 	vggInspired.add(Conv2D(256, kernel_size=3, strides=1, padding='same', activation='relu'))
 	vggInspired.add(MaxPooling2D(pool_size=(2, 2), strides=None, padding='valid', data_format=None))
@@ -92,9 +97,11 @@ def trainSimpleVgg():
 	#fourth conv layer
 	vggInspired.add(Conv2D(512, kernel_size=3, strides=1, padding='same', activation='relu'))
 	vggInspired.add(Conv2D(512, kernel_size=3, strides=1, padding='same', activation='relu'))
+	vggInspired.add(Conv2D(512, kernel_size=3, strides=1, padding='same', activation='relu'))
 	vggInspired.add(MaxPooling2D(pool_size=(2, 2), strides=None, padding='valid', data_format=None))
 	
 	#fifth conv layer
+	vggInspired.add(Conv2D(512, kernel_size=3, strides=1, padding='same', activation='relu'))
 	vggInspired.add(Conv2D(512, kernel_size=3, strides=1, padding='same', activation='relu'))
 	vggInspired.add(Conv2D(512, kernel_size=3, strides=1, padding='same', activation='relu'))
 	vggInspired.add(MaxPooling2D(pool_size=(2, 2), strides=None, padding='valid', data_format=None))
@@ -103,9 +110,9 @@ def trainSimpleVgg():
 	vggInspired.add(Flatten())
 	
 	#fc layers
-	vggInspired.add(Dense(nb_nodes))
-	vggInspired.add(Dense(nb_nodes))
-	vggInspired.add(Dense(nb_nodes))
+	vggInspired.add(Dense(nb_nodes // nb_nodes_small_factor))
+	vggInspired.add(Dense(nb_nodes // nb_nodes_small_factor))
+	vggInspired.add(Dense(nb_nodes_last // nb_nodes_small_factor))
 	
 	#output softmax
 	vggInspired.add(Dense(nb_classes, activation='softmax'))

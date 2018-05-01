@@ -185,9 +185,11 @@ def trainSimpleVgg():
 
 	model = buildVggA(train_gen.num_classes)
 
-	sgd = optimizers.SGD(lr=0.001, momentum=0.9) #if we're still doing bad with lr ~ .000001, then give up. Persist until then
+	learning_rate = .001
+	sgd = optimizers.SGD(lr=learning_rate, momentum=0.9) #if we're still doing bad with lr ~ .000001, then give up. Persist until then
+	adam = optimizers.Adam(lr=learning_rate)
 	# set optmizer and compile model
-	model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=["accuracy"])
+	model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=["accuracy"])
 	
 	# Prepare model model saving directory.
 	save_dir = os.path.join(os.getcwd(), 'saved_models')

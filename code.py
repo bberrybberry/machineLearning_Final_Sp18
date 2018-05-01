@@ -159,7 +159,7 @@ def buildVggD(num_classes):
 	return vggInspired
 	
 def trainSimpleVgg():
-	# load data
+	# Load data
 	train_datagen = ImageDataGenerator(
 			featurewise_center=True,
 			featurewise_std_normalization=True,
@@ -185,10 +185,10 @@ def trainSimpleVgg():
 
 	model = buildVggA(train_gen.num_classes)
 
+	# Set optmizer and compile model
 	learning_rate = .0001
 	sgd = optimizers.SGD(lr=learning_rate, momentum=0.9) #if we're still doing bad with lr ~ .000001, then give up. Persist until then
 	adam = optimizers.Adam(lr=learning_rate)
-	# set optmizer and compile model
 	model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=["accuracy"])
 	
 	# Prepare model model saving directory.
@@ -198,6 +198,7 @@ def trainSimpleVgg():
 		os.makedirs(save_dir)
 	filepath = os.path.join(save_dir, model_name)
 
+	# Save train models and fit generator
 	checkpoint = ModelCheckpoint(filepath=filepath, monitor='val_acc', verbose=1, save_best_only=True)
 	callbacks = [checkpoint]	
 	h = model.fit_generator(
@@ -210,7 +211,8 @@ def trainSimpleVgg():
 			verbose=1)
 	return h
 
-
+# Run
 history = trainSimpleVgg()
 
+# Save
 pandas.DataFrame(history.history).to_csv("history.csv")

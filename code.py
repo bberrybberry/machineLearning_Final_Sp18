@@ -185,7 +185,7 @@ def trainSimpleVgg():
 
 	model = buildVggA(train_gen.num_classes)
 
-	learning_rate = .001
+	learning_rate = .0001
 	sgd = optimizers.SGD(lr=learning_rate, momentum=0.9) #if we're still doing bad with lr ~ .000001, then give up. Persist until then
 	adam = optimizers.Adam(lr=learning_rate)
 	# set optmizer and compile model

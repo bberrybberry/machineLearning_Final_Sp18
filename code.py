@@ -193,7 +193,7 @@ def trainSimpleVgg():
 	
 	# Prepare model model saving directory.
 	save_dir = os.path.join(os.getcwd(), 'saved_models')
-	model_name = 'vgg16_imagenet.{epoch:03d}.h5'
+	model_name = 'vgg16_dogs.{epoch:03d}.h5'
 	if not os.path.isdir(save_dir):
 		os.makedirs(save_dir)
 	filepath = os.path.join(save_dir, model_name)

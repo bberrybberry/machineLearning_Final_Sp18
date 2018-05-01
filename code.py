@@ -98,7 +98,7 @@ def buildVggA(num_classes):
 	# TODO: For model A, I don't think that line above should be commented out, but I'll leave it as is for now
 	
 	#output softmax
-	vggInspired.add(Dense(nb_classes, activation='softmax'))
+	vggInspired.add(Dense(num_classes, activation='softmax'))
 	
 	vggInspired.summary()
 	

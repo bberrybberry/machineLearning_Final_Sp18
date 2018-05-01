@@ -32,6 +32,7 @@ from keras.callbacks import ModelCheckpoint
 from keras import applications
 from keras import optimizers
 from keras import initializers
+import pandas
 import os
 
 # dimensions of our images.
@@ -150,3 +151,5 @@ def trainSimpleVgg():
 
 
 history = trainSimpleVgg()
+
+pandas.DataFrame(history.history).to_csv("history.csv")

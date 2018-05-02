@@ -29,27 +29,29 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Sequential
 from keras.layers import Dropout, Flatten, Dense, Conv2D, MaxPooling2D
 from keras.callbacks import ModelCheckpoint
+from keras.datasets import cifar10
 from keras import applications
 from keras import optimizers
 from keras import initializers
+from keras import utils
 import pandas
 import os
 import time
 import datetime
-
 # dimensions of our images.
-img_width, img_height = 32,32
+img_width, img_height = 32, 32
 
 # model variables
 train_data_dir = 'data/train'
 validation_data_dir = 'data/validation'
 nb_train_samples = 1080*85
 nb_validation_samples = 120*85
-epochs = 100
+epochs = 50
 batch_size = 256
 nb_nodes = 4096
 nb_nodes_last = 1000
 nb_nodes_small_factor = 1 
+data_augmentation = True
 
 def buildVggA(num_classes):
 	#Resize arrays
@@ -162,30 +164,18 @@ def buildVggD(num_classes):
 	
 def trainSimpleVgg():
 	# Load data
-	train_datagen = ImageDataGenerator(
-			rescale=1./255)
-			#featurewise_center=True,
-			#featurewise_std_normalization=True,
-			#rotation_range=20,
-			#width_shift_range=0.2,
-			#height_shift_range=0.2,
-			#shear_range=0.2,
-			#zoom_range=0.2,
-			#horizontal_flip=True)
-	test_datagen = ImageDataGenerator(rescale=1./255)
-	
-	train_gen = train_datagen.flow_from_directory(
-			train_data_dir,
-			target_size=(img_width, img_height),
-			batch_size=batch_size,
-			shuffle=True)
-	test_gen = test_datagen.flow_from_directory(
-			validation_data_dir,
-			target_size=(img_width, img_height),
-			batch_size=batch_size,
-			shuffle=True)
+	num_classes = 10
+	(x_train, y_train), (x_test, y_test) = cifar10.load_data()
+	y_train = utils.to_categorical(y_train, num_classes)
+	y_test = utils.to_categorical(y_test, num_classes)
 
-	model = buildVggA(train_gen.num_classes)
+	x_train = x_train.astype('float32')
+	x_test = x_test.astype('float32')
+	x_train /= 255
+	x_test /= 255
+
+	
+	model = buildVggA(num_classes)
 
 	# Set optmizer and compile model
 	learning_rate = .001
@@ -195,7 +185,7 @@ def trainSimpleVgg():
 	
 	# Prepare model model saving directory.
 	save_dir = os.path.join(os.getcwd(), 'saved_models')
-	model_name = 'vgg16_dogs.{epoch:03d}.h5'
+	model_name = 'vgg16_cifar.{epoch:03d}.h5'
 	if not os.path.isdir(save_dir):
 		os.makedirs(save_dir)
 	filepath = os.path.join(save_dir, model_name)
@@ -203,24 +193,44 @@ def trainSimpleVgg():
 	# Save train models and fit generator
 	checkpoint = ModelCheckpoint(filepath=filepath, monitor='val_acc', verbose=1, save_best_only=True)
 	callbacks = [checkpoint]	
-	h = model.fit_generator(
-			train_gen,
-			steps_per_epoch=nb_train_samples/batch_size,
+	h = 0
+	if not data_augmentation:
+		h = model.fit(
+			x_train,
+			y_train,
+			batch_size=batch_size,
 			epochs=epochs,
-			validation_data=test_gen,
-			validation_steps=nb_validation_samples / batch_size,
+			validation_data=(x_test, y_test),
 			callbacks=callbacks,
 			verbose=1)
+	else:
+		datagen = ImageDataGenerator(
+			featurewise_center=True,
+			featurewise_std_normalization=True,
+			rotation_range=20,
+			width_shift_range=0.2,
+			height_shift_range=0.2,
+			shear_range=0.2,
+			zoom_range=0.2,
+			horizontal_flip=True)
+
+		datagen.fit(x_train)
+
+		h = model.fit_generator(
+			datagen.flow(x_train, y_train, batch_size=batch_size),
+			epochs=epochs,
+			validation_data=(x_test, y_test),
+			workers=4)
+
+
 	return h
 
 ts = time.time()
 st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d_%H-%M-%S')
 print(st)
+
 # Run
 history = trainSimpleVgg()
-
-
-
 
 # Save
 pandas.DataFrame(history.history).to_csv("history" + st + ".csv")

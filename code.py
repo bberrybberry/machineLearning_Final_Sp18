@@ -223,11 +223,9 @@ def trainSimpleVgg():
 ts = time.time()
 st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d_%H-%M-%S')
 print(st)
+
 # Run
 history = trainSimpleVgg()
-
-
-
 
 # Save
 pandas.DataFrame(history.history).to_csv("history" + st + ".csv")

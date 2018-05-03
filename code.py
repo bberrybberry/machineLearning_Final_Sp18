@@ -44,7 +44,7 @@ import time
 import datetime
 
 # dimensions of our images.
-img_width, img_height = 32,32
+img_width, img_height = 32,32 #next test: 32 -> 48px
 
 # model variables
 train_data_dir = 'data/train'

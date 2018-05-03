@@ -51,12 +51,12 @@ train_data_dir = 'data/train'
 validation_data_dir = 'data/validation'
 nb_train_samples = 1080*85
 nb_validation_samples = 120*85
-epochs = 100
+epochs = 45 #dropped this down just for viewing underfitting
 batch_size = 256
 nb_nodes = 4096
 nb_nodes_last = 1000
 nb_nodes_small_factor = 1 
-dropout_rate = .5
+dropout_rate = .3
 
 def buildVggA(num_classes):
 	#Resize arrays
@@ -102,6 +102,10 @@ def buildVggA(num_classes):
 	vggInspired.add(Dense(nb_nodes // nb_nodes_small_factor, kernel_initializer=randnorm))
 	vggInspired.add(Dropout(dropout_rate))
 	vggInspired.add(Dense(nb_nodes // nb_nodes_small_factor, kernel_initializer=randnorm))
+	vggInspired.add(Dropout(dropout_rate))
+	
+	# Let's add another small layer and see what happens
+	vggInspired.add(Dense(nb_nodes // 4, kernel_initializer=randnorm))
 	vggInspired.add(Dropout(dropout_rate))
 	
 	#output softmax

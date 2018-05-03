@@ -44,18 +44,18 @@ import time
 import datetime
 
 # dimensions of our images.
-img_width, img_height = 32,32
+img_width, img_height = 48, 48
 
 # model variables
 train_data_dir = 'data/train'
 validation_data_dir = 'data/validation'
 nb_train_samples = 1080*85
 nb_validation_samples = 120*85
-epochs = 100
+epochs = 40
 batch_size = 256
 nb_nodes = 4096
 nb_nodes_last = 1000
-nb_nodes_small_factor = 1 
+nb_nodes_small_factor = 4 
 
 def buildVggA(num_classes):
 	#Resize arrays

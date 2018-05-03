@@ -56,6 +56,7 @@ batch_size = 256
 nb_nodes = 4096
 nb_nodes_last = 1000
 nb_nodes_small_factor = 1 
+dropout_rate = .5
 
 def buildVggA(num_classes):
 	#Resize arrays
@@ -99,9 +100,9 @@ def buildVggA(num_classes):
 
 	#fc layers
 	vggInspired.add(Dense(nb_nodes // nb_nodes_small_factor, kernel_initializer=randnorm))
-	vggInspired.add(Dropout(.5))
+	vggInspired.add(Dropout(dropout_rate))
 	vggInspired.add(Dense(nb_nodes // nb_nodes_small_factor, kernel_initializer=randnorm))
-	vggInspired.add(Dropout(.5))
+	vggInspired.add(Dropout(dropout_rate))
 	#vggInspired.add(Dense(nb_nodes_last // nb_nodes_small_factor))
 	# TODO: For model A, I don't think that line above should be commented out, but I'll leave it as is for now
 	
@@ -154,9 +155,9 @@ def buildVggD(num_classes):
 
 	#fc layers
 	vggInspired.add(Dense(nb_nodes // nb_nodes_small_factor, kernel_initializer=randnorm))
-	vggInspired.add(Dropout(.5))
+	vggInspired.add(Dropout(dropout_rate))
 	vggInspired.add(Dense(nb_nodes // nb_nodes_small_factor, kernel_initializer=randnorm))
-	vggInspired.add(Dropout(.5))
+	vggInspired.add(Dropout(dropout_rate))
 	vggInspired.add(Dense(nb_nodes_last // nb_nodes_small_factor))
 	
 	#output softmax

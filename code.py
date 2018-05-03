@@ -23,6 +23,12 @@
 					i2.jpg
 					...
 				...
+				
+	Notes: Things that affect underfitting:
+		- Increase model capacity
+		- Decrease regularization
+		- More features to input space
+			- Interesting-- This is what our image data uses as size (more features == bigger image)
 '''
 import numpy as np
 from keras.preprocessing.image import ImageDataGenerator

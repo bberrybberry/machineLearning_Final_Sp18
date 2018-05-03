@@ -103,8 +103,6 @@ def buildVggA(num_classes):
 	vggInspired.add(Dropout(dropout_rate))
 	vggInspired.add(Dense(nb_nodes // nb_nodes_small_factor, kernel_initializer=randnorm))
 	vggInspired.add(Dropout(dropout_rate))
-	#vggInspired.add(Dense(nb_nodes_last // nb_nodes_small_factor))
-	# TODO: For model A, I don't think that line above should be commented out, but I'll leave it as is for now
 	
 	#output softmax
 	vggInspired.add(Dense(num_classes, activation='softmax'))
@@ -158,7 +156,6 @@ def buildVggD(num_classes):
 	vggInspired.add(Dropout(dropout_rate))
 	vggInspired.add(Dense(nb_nodes // nb_nodes_small_factor, kernel_initializer=randnorm))
 	vggInspired.add(Dropout(dropout_rate))
-	vggInspired.add(Dense(nb_nodes_last // nb_nodes_small_factor))
 	
 	#output softmax
 	vggInspired.add(Dense(nb_classes, activation='softmax'))

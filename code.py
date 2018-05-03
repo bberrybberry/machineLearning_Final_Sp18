@@ -51,12 +51,13 @@ train_data_dir = 'data/train'
 validation_data_dir = 'data/validation'
 nb_train_samples = 1080*85
 nb_validation_samples = 120*85
-epochs = 45 #dropped this down just for viewing underfitting
+epochs = 45  #dropped this down just for viewing underfitting
 batch_size = 256
 nb_nodes = 4096
 nb_nodes_last = 1000
-nb_nodes_small_factor = 4 
+nb_nodes_small_factor = 4
 dropout_rate = .3
+vgg_model = 'A'
 
 def buildVggA(num_classes):
 	#Resize arrays
@@ -105,9 +106,14 @@ def buildVggA(num_classes):
 	vggInspired.add(Dropout(dropout_rate))
 	
 	# Let's add another small layer and see what happens
-	vggInspired.add(Dense(nb_nodes // 4, kernel_initializer=randnorm))
-	vggInspired.add(Dropout(dropout_rate))
 	
+	vggInspired.add(Dense(nb_nodes // nb_nodes_small_factor, kernel_initializer=randnorm))
+	vggInspired.add(Dropout(dropout_rate))
+	vggInspired.add(Dense(nb_nodes // nb_nodes_small_factor, kernel_initializer=randnorm))
+	vggInspired.add(Dropout(dropout_rate))
+	vggInspired.add(Dense(nb_nodes // nb_nodes_small_factor, kernel_initializer=randnorm))
+	vggInspired.add(Dropout(dropout_rate))
+
 	#output softmax
 	vggInspired.add(Dense(num_classes, activation='softmax'))
 	
@@ -160,9 +166,13 @@ def buildVggD(num_classes):
 	vggInspired.add(Dropout(dropout_rate))
 	vggInspired.add(Dense(nb_nodes // nb_nodes_small_factor, kernel_initializer=randnorm))
 	vggInspired.add(Dropout(dropout_rate))
-	
+
+	# Adding for fun because it helped VGG A
+	vggInspired.add(Dense(nb_nodes // 4, kernel_initializer=randnorm))
+	vggInspired.add(Dropout(dropout_rate))
+
 	#output softmax
-	vggInspired.add(Dense(nb_classes, activation='softmax'))
+	vggInspired.add(Dense(num_classes, activation='softmax'))
 	
 	vggInspired.summary()
 	
@@ -193,7 +203,10 @@ def trainSimpleVgg():
 			batch_size=batch_size,
 			shuffle=True)
 
-	model = buildVggA(train_gen.num_classes)
+	if vgg_model == 'A' or vgg_model == 'a':
+		model = buildVggA(train_gen.num_classes)
+	elif vgg_model == 'D' or vgg_model == 'd':
+		model = buildVggD(train_gen.num_classes)
 
 	# Set optmizer and compile model
 	learning_rate = .001
@@ -203,7 +216,7 @@ def trainSimpleVgg():
 	
 	# Prepare model model saving directory.
 	save_dir = os.path.join(os.getcwd(), 'saved_models')
-	model_name = 'vgg16_dogs.{epoch:03d}.h5'
+	model_name = 'vgg16' + vgg_model + '_dogs.{epoch:03d}.h5'
 	if not os.path.isdir(save_dir):
 		os.makedirs(save_dir)
 	filepath = os.path.join(save_dir, model_name)
@@ -219,6 +232,8 @@ def trainSimpleVgg():
 			validation_steps=nb_validation_samples / batch_size,
 			callbacks=callbacks,
 			verbose=1)
+	
+	model.save('saved_models/vgg16' + vgg_model + '_dogs.' + st + '_' + str(epochs) + '.h5')
 	return h
 
 ts = time.time()
@@ -229,4 +244,4 @@ print(st)
 history = trainSimpleVgg()
 
 # Save
-pandas.DataFrame(history.history).to_csv("history" + st + ".csv")
+pandas.DataFrame(history.history).to_csv("history_" + vgg_model + "_" + st + ".csv")

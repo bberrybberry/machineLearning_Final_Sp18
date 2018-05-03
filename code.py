@@ -55,7 +55,7 @@ epochs = 45 #dropped this down just for viewing underfitting
 batch_size = 256
 nb_nodes = 4096
 nb_nodes_last = 1000
-nb_nodes_small_factor = 1 
+nb_nodes_small_factor = 4 
 dropout_rate = .3
 
 def buildVggA(num_classes):
@@ -171,7 +171,7 @@ def buildVggD(num_classes):
 def trainSimpleVgg():
 	# Load data
 	train_datagen = ImageDataGenerator(
-			rescale=1./255)
+			rescale=1./255,
 			#featurewise_center=True,
 			#featurewise_std_normalization=True,
 			#rotation_range=20,
@@ -179,7 +179,7 @@ def trainSimpleVgg():
 			#height_shift_range=0.2,
 			#shear_range=0.2,
 			#zoom_range=0.2,
-			#horizontal_flip=True)
+			horizontal_flip=True)
 	test_datagen = ImageDataGenerator(rescale=1./255)
 	
 	train_gen = train_datagen.flow_from_directory(

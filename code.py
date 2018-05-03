@@ -32,7 +32,7 @@
 '''
 import numpy as np
 from keras.preprocessing.image import ImageDataGenerator
-from keras.models import Sequential
+from keras.models import Sequential, load_model
 from keras.layers import Dropout, Flatten, Dense, Conv2D, MaxPooling2D
 from keras.callbacks import ModelCheckpoint
 from keras import applications
@@ -51,13 +51,19 @@ train_data_dir = 'data/train'
 validation_data_dir = 'data/validation'
 nb_train_samples = 1080*85
 nb_validation_samples = 120*85
-epochs = 45  #dropped this down just for viewing underfitting
+epochs = 10  #dropped this down just for viewing underfitting
 batch_size = 256
 nb_nodes = 4096
 nb_nodes_last = 1000
-nb_nodes_small_factor = 4
-dropout_rate = .3
+nb_nodes_small_factor = 4 
+dropout_rate = .5
 vgg_model = 'A'
+load_old_model = False
+model_path = 'saved_models/vgg16A_dogs.035.h5' # Put model path here
+
+def load_vgg_model():
+	model = load_model(model_path)
+	return model
 
 def buildVggA(num_classes):
 	#Resize arrays
@@ -107,10 +113,6 @@ def buildVggA(num_classes):
 	
 	# Let's add another small layer and see what happens
 	
-	vggInspired.add(Dense(nb_nodes // nb_nodes_small_factor, kernel_initializer=randnorm))
-	vggInspired.add(Dropout(dropout_rate))
-	vggInspired.add(Dense(nb_nodes // nb_nodes_small_factor, kernel_initializer=randnorm))
-	vggInspired.add(Dropout(dropout_rate))
 	vggInspired.add(Dense(nb_nodes // nb_nodes_small_factor, kernel_initializer=randnorm))
 	vggInspired.add(Dropout(dropout_rate))
 
@@ -203,10 +205,13 @@ def trainSimpleVgg():
 			batch_size=batch_size,
 			shuffle=True)
 
-	if vgg_model == 'A' or vgg_model == 'a':
-		model = buildVggA(train_gen.num_classes)
-	elif vgg_model == 'D' or vgg_model == 'd':
-		model = buildVggD(train_gen.num_classes)
+	if load_old_model == False:
+		if vgg_model == 'A' or vgg_model == 'a':
+			model = buildVggA(train_gen.num_classes)
+		elif vgg_model == 'D' or vgg_model == 'd':
+			model = buildVggD(train_gen.num_classes)
+	else:
+		model = load_vgg_model()
 
 	# Set optmizer and compile model
 	learning_rate = .001

@@ -32,6 +32,7 @@
 '''
 import numpy as np
 from keras.preprocessing.image import ImageDataGenerator
+from keras.preprocessing import image
 from keras.models import Sequential, load_model
 from keras.layers import Dropout, Flatten, Dense, Conv2D, MaxPooling2D
 from keras.callbacks import ModelCheckpoint
@@ -60,10 +61,14 @@ dropout_rate = .5
 vgg_model = 'A'
 load_old_model = False
 model_path = 'saved_models/vgg16A_dogs.035.h5' # Put model path here
+labels_map_path = 'label_map.npy'
 
-def load_vgg_model():
+def load_vgg_model(model_path):
 	model = load_model(model_path)
 	return model
+
+def evaluate(model, data):
+    return model.predict(data, steps=1)
 
 def buildVggA(num_classes):
 	#Resize arrays
@@ -199,7 +204,11 @@ def trainSimpleVgg():
 			target_size=(img_width, img_height),
 			batch_size=batch_size,
 			shuffle=True)
-
+			
+	#print learned labeled map for later generating
+	label_map = train_gen.class_indices
+	np.save('label_map.npy', label_map)
+	
 	if load_old_model == False:
 		if vgg_model == 'A' or vgg_model == 'a':
 			model = buildVggA(train_gen.num_classes)
@@ -236,12 +245,25 @@ def trainSimpleVgg():
 	model.save('saved_models/vgg16' + vgg_model + '_dogs.' + st + '_' + str(epochs) + '.h5')
 	return h
 
-ts = time.time()
-st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d_%H-%M-%S')
-print(st)
+train = True
 
-# Run
-history = trainSimpleVgg()
+if train:
+	ts = time.time()
+	st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d_%H-%M-%S')
+	print(st)
 
-# Save
-pandas.DataFrame(history.history).to_csv("history_" + vgg_model + "_" + st + ".csv")
+	# Run
+	history = trainSimpleVgg()
+
+	# Save
+	pandas.DataFrame(history.history).to_csv("history_" + vgg_model + "_" + st + ".csv")
+else:
+	m = load_vgg_model(model_path)
+	i = image.load_img('/testdata/henry_small.jpg')
+	i = image.img_to_array(i)
+	i = i.reshape((1,48,48,3))
+	ans = evaluate(m, i)
+	
+	label_map = np.load(labels_map_path).item()
+	
+	print("Predicted: %s" % (label_map[ans.argmax(axis=-1)]))

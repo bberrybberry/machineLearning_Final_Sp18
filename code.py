@@ -44,14 +44,14 @@ import time
 import datetime
 
 # dimensions of our images.
-img_width, img_height = 32,32 #next test: 32 -> 48px
+img_width, img_height = 48, 48
 
 # model variables
 train_data_dir = 'data/train'
 validation_data_dir = 'data/validation'
 nb_train_samples = 1080*85
 nb_validation_samples = 120*85
-epochs = 10  #dropped this down just for viewing underfitting
+epochs = 40
 batch_size = 256
 nb_nodes = 4096
 nb_nodes_last = 1000
@@ -108,11 +108,6 @@ def buildVggA(num_classes):
 	#fc layers
 	vggInspired.add(Dense(nb_nodes // nb_nodes_small_factor, kernel_initializer=randnorm))
 	vggInspired.add(Dropout(dropout_rate))
-	vggInspired.add(Dense(nb_nodes // nb_nodes_small_factor, kernel_initializer=randnorm))
-	vggInspired.add(Dropout(dropout_rate))
-	
-	# Let's add another small layer and see what happens
-	
 	vggInspired.add(Dense(nb_nodes // nb_nodes_small_factor, kernel_initializer=randnorm))
 	vggInspired.add(Dropout(dropout_rate))
 

@@ -44,14 +44,14 @@ import time
 import datetime
 
 # dimensions of our images.
-img_width, img_height = 48, 48
+img_width, img_height = 64, 64
 
 # model variables
 train_data_dir = 'data/train'
 validation_data_dir = 'data/validation'
 nb_train_samples = 1080*85
 nb_validation_samples = 120*85
-epochs = 40
+epochs = 10
 batch_size = 256
 nb_nodes = 4096
 nb_nodes_last = 1000
